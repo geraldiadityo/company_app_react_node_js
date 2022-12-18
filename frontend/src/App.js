@@ -7,6 +7,7 @@ import AuthService from './service/auth.service';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Home from './components/Home';
+import MainJabatan from './components/jabatan/MainJabatan';
 
 const App = () => {
   const [currentUser, setCurrentUser] = useState(undefined);
@@ -45,6 +46,13 @@ const App = () => {
                 </Link>
               </li>
             )}
+            {showAdmin && (
+              <li className="nav-item">
+                <Link className="nav-link" to={"/jabatan"}>
+                  Jabatan
+                </Link>
+              </li>
+            )}
           </div>
           {currentUser ? (
             <div className="navbar-nav mb-auto">
@@ -76,6 +84,7 @@ const App = () => {
           <Route path='/home' element={<Home/>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/register' element={<Register/>}/>
+          <Route path='/jabatan' element={<MainJabatan/>}/>
         </Routes>
       </div>
     </div>

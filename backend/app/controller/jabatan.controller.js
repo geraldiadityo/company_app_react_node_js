@@ -49,3 +49,20 @@ exports.getAll = (req, res) => {
         });
     });
 };
+
+exports.deleteJabatan = (req, res) => {
+    let id = req.params.id;
+    Jabatan.destroy({
+        where:{
+            id:id
+        }
+    }).then(() => {
+        res.send({
+            message:`data jabatan with id ${id} was delete successfully`
+        });
+    }).catch((err) => {
+        res.status(500).send({
+            message:err.message
+        });
+    });
+};

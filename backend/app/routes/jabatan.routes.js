@@ -21,4 +21,8 @@ module.exports = function(app){
     app.get("/api/jabatan/",
     [authJwt.verifyToken, authJwt.isAdmin],
     controller.getAll);
+
+    app.delete("/api/jabatan/:id",
+    [authJwt.verifyToken, authJwt.isAdmin],
+    controller.deleteJabatan);
 }
