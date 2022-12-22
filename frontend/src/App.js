@@ -8,7 +8,7 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Home from './components/Home';
 import MainJabatan from './components/jabatan/MainJabatan';
-
+import MainEmployee from './components/employee/MainEmployee';
 const App = () => {
   const [currentUser, setCurrentUser] = useState(undefined);
   const [showAdmin, setShowAdmin] = useState(false);
@@ -85,6 +85,7 @@ const App = () => {
           <Route path='/login' element={<Login/>}/>
           <Route path='/register' element={<Register/>}/>
           <Route path='/jabatan' element={<MainJabatan/>}/>
+          <Route path='/employee' element={<MainEmployee/>}/>
         </Routes>
       </div>
     </div>
