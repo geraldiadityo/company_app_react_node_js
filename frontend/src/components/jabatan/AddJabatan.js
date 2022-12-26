@@ -1,60 +1,37 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
 import authHeader from "../../service/auth-header";
-import {useForm} from "react-hook-form";
+import {useForm,Controller} from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from 'yup';
 const AddJabatan = (props) => {
-    const [jabatan, setJabatan] = useState({
-        id:0,
-        name:'',
-        salary:''
+    const [jabatanname, setJabatanName] = useState("");
+    const [salary, setSalary] = useState(0);
+
+    const API_URL = "http://localhost:8080/api/jabatan/";
+
+    const validationSchema = Yup.object().shape({
+        name:Yup.string().required('this field is required').min(3,'this field exceed min 3 character'),
+        salary:Yup.number().required('this field is required'),
     });
 
-    const {
-        register,
-        handleSubmit,
-        formState:{errors}
-    } = useForm();
+    const onChangeJabatanName = (value) => {
+        setJabatanName(value);
+        setValue("name",value);
+    }
 
-    const API_URL = "http://localhost:8080/api/jabatan/"
+    const onChangeSalary = (value) => {
+        setSalary(value);
+        setValue("salary",value);
+    }
 
-    useEffect(() => {
-        const prejabatan = props.jabatan;
-        if (prejabatan){
-            const {id,name, salary} = prejabatan;
-            setJabatan({id,name, salary});
-        }
-    },[]);
+    const {handleSubmit, setValue, control, formState:{errors}} = useForm({
+        resolver:yupResolver(validationSchema)
+    });
 
-    const onChange = (e) => {
-        const name = e.target.name;
-        const value = e.target.value;
-
-        setJabatan(prevstate => {
-            const newState = {...prevstate};
-            newState[name] = value;
-            return newState;
-        });
-    };
-
-    const addJabatan = async() => {
+    const addJabatan = async(data) => {
         try{
-            await axios.post(API_URL,jabatan,{
-                headers:authHeader()
-            }).then((res) => {
-                props.resetState();
-                props.toggle();
-                props.setMessageNotif(res.data.message, "success");
-                props.toggleNotif();
-            });
-        }
-        catch(err){
-            console.log(err.message);
-        }
-    };
-
-    const editJabatan = async() => {
-        try{
-            await axios.put(API_URL+`${jabatan.id}/`,jabatan,{
+            await axios.post(API_URL,data,{
                 headers:authHeader()
             }).then((res) => {
                 props.resetState();
@@ -68,62 +45,86 @@ const AddJabatan = (props) => {
         }
     };
 
+    const editJabatan = async(data) => {
+        try{
+            await axios.put(API_URL+`${props.jabatan.id}/`,data,{
+                headers:authHeader()
+            }).then((res) => {
+                props.resetState();
+                props.toggle();
+                props.setMessageNotif(res.data.message, "success");
+                props.toggleNotif();
+            });
+        }
+        catch(err){
+            console.log(err.message);
+        }
+    };
+
+    useEffect(() => {
+        if (props.jabatan){
+            axios.get(API_URL+`${props.jabatan.id}/`,{
+                headers:authHeader()
+            }).then((res) => {
+                const fields = ['name','salary'];
+                fields.forEach(field => setValue(field,res.data.data[field]));
+                setJabatanName(res.data.data.name);
+                setSalary(res.data.data.salary);
+            })
+        }
+    },[]);
+
     const defaultEmpty = (value) => {
         return value === "" ? "" : value;
     };
 
     let btn_name = "Add";
     if (props.jabatan){
-        btn_name = "Update";
+        btn_name="Update";
     }
 
     return (
-        <form onSubmit={props.jabatan ? handleSubmit(editJabatan) : handleSubmit(addJabatan)} className="need-validations" noValidate>
+        <form onSubmit={props.jabatan ? handleSubmit(editJabatan) : handleSubmit(addJabatan)}>
             <div className="form-group">
-                <label htmlFor="name">Name</label>
-                <input type="text" className="form-control" {...register("name", {
-                    required:true,
-                    minLength:3,
-                    maxLength:40
-                })} value={defaultEmpty(jabatan.name)} onChange={onChange}/>
-                {errors?.name?.type==="required" && (
-                    <div className="alert alert-danger" role="alert">
-                        this field is required!
-                    </div>
-                )}
-                {errors?.name?.type==="minLength" && (
-                    <div className="alert alert-danger" role="alert">
-                        this field exceed min 3 character
-                    </div>
-                )}
-                {errors?.name?.type==="maxLength" && (
-                    <div className="alert alert-danger" role="alert">
-                        this field cannot exceed 40 character
-                    </div>
-                )}
+                <label htmlFor="name">Jabatan Name</label>
+                <Controller
+                name="name"
+                control={control}
+                render={({field}) => {
+                    return (
+                        <input type="text"
+                        className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                        onChange={(e) => onChangeJabatanName(e.target.value)}
+                        value={defaultEmpty(jabatanname)}
+                        />
+                    );
+                }}
+                />
+                <div className="invalid-feedback">{errors?.name?.message}</div>
             </div>
             <div className="form-group">
                 <label htmlFor="salary">Salary</label>
-                <input type="number" className="form-control" {...register("salary",{
-                    valueAsNumber:true,
-                    required:true
-                })} value={defaultEmpty(jabatan.salary)} onChange={onChange}/>
-                {errors?.salary?.type==="required" && (
-                    <div className="alert alert-danger" role="alert">
-                        this field is required
-                    </div>
-                )}
-                {errors?.salary?.type==="valueAsNumber" && (
-                    <div className="alert alert-danger" role="alert">
-                        this value is not number
-                    </div>
-                )}
+                <Controller
+                name="salary"
+                control={control}
+                render={({field}) => {
+                    return (
+                        <input type="number"
+                        className={`form-control ${errors.salary ? 'is-invalid' : ''}`}
+                        onChange={(e) => onChangeSalary(e.target.value)}
+                        value={defaultEmpty(salary)}
+                        />
+                    );
+                }}
+                />
+                <div className="invalid-feedback">{errors?.salary?.message}</div>
             </div>
-            <div className="form-group">
-                <button type="submit" className="btn btn-primary float-right">{btn_name}</button>
+            <div className="form-control">
+                <div>
+                    <button type="submit" className="btn btn-primary float-right">{btn_name}</button>
+                </div>
             </div>
         </form>
     );
 };
-
 export default AddJabatan;

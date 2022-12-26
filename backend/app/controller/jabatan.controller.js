@@ -50,6 +50,19 @@ exports.getAll = (req, res) => {
     });
 };
 
+exports.getOne = (req, res) => {
+    let id = req.params.id;
+    Jabatan.findByPk(id).then((jabatan) => {
+        res.send({
+            data:jabatan
+        });
+    }).catch((err) => {
+        res.status(500).send({
+            message:err.message
+        });
+    });
+};
+
 exports.deleteJabatan = (req, res) => {
     let id = req.params.id;
     Jabatan.destroy({
