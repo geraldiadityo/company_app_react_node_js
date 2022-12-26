@@ -1,70 +1,54 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
 import authHeader from "../../service/auth-header";
-import {set, useForm} from "react-hook-form";
+import {useForm,Controller} from "react-hook-form";
 import Select from "react-select";
+import {yupResolver} from "@hookform/resolvers/yup";
+import * as Yup from 'yup';
 
 const AddEmployee = (props) => {
+
     const [datajabatan, setDataJabatan] = useState([]);
-    const [id, setId] = useState(0);
     const [eid, setEid] = useState("");
     const [ename, setEname] = useState("");
-    const [gender, setGender] = useState("Male");
+    const [gender, setGender] = useState("");
     const [jabatan, setJabatan] = useState("");
 
-    const {
-        register,
-        handleSubmit,
-        formState:{errors}
-    } = useForm();
-
     const API_URL = "http://localhost:8080/api/employee/";
-    const API_URL_JABATAN = "http://localhost:8080/api/jabatan/";
+    const API_JABATAN_URL = "http://localhost:8080/api/jabatan/";
 
-    useEffect(() => {
-        const preemployee = props.employee;
-        getJabatans();
-        if (preemployee){
-            setId(preemployee.id);
-            setEid(preemployee.eid);
-            setEname(preemployee.ename);
-            setGender(preemployee.gender);
-            setJabatan(preemployee.jabatan.name);
-        }
-    },[]);
+    const validationSchema = Yup.object().shape({
+        eid:Yup.string().required('this eid is required').min(3,'this field exceed 3 character'),
+        ename:Yup.string().required('this is required'),
+        gender:Yup.string().required('this field is required'),
+        jabatan:Yup.string().required('this field is required')
+    });
 
     const onChangeEid = (value) => {
         setEid(value);
-    };
+        setValue("eid",value);
+    }
 
     const onChangeEname = (value) => {
         setEname(value);
-    };
+        setValue("ename",value);
+    }
 
     const onChangeGender = (value) => {
         setGender(value);
-    };
+        setValue("gender",value);
+    }
 
     const onChangeJabatan = (value) => {
         setJabatan(value);
-    };
+        setValue("jabatan",value);
+    }
 
-    const getJabatans = async() => {
-        await axios.get(API_URL_JABATAN,{
-            headers:authHeader()
-        }).then((jabatan) => {
-            const result = jabatan.data.map(data => {
-                return {
-                    label:data.name,
-                    value:data.name
-                }
-            })
-            setDataJabatan(result);
-        });
-    };
-    
-    const addEmployee = async() => {
-        const data = {eid,ename,gender,jabatan};
+    const {handleSubmit, setValue, control,formState:{errors}} = useForm({
+        resolver:yupResolver(validationSchema),
+    });
+
+    const addEmployee = async(data) => {
         try{
             await axios.post(API_URL,data,{
                 headers:authHeader()
@@ -73,17 +57,16 @@ const AddEmployee = (props) => {
                 props.toggle();
                 props.setMessageNotif(res.data.message,"success");
                 props.toggleNotif();
-            });
+            })
         }
         catch(err){
             console.log(err.message);
         }
     };
 
-    const editEmployee = async() => {
-        const data = {eid,ename,gender,jabatan};
+    const editEmployee = async(data) => {
         try{
-            await axios.put(API_URL+`${id}/`,data,{
+            await axios.put(API_URL+`${props.employee.id}/`,data,{
                 headers:authHeader()
             }).then((res) => {
                 props.resetState();
@@ -97,9 +80,41 @@ const AddEmployee = (props) => {
         }
     };
 
+    const getDataJabatan = async() => {
+        await axios.get(API_JABATAN_URL,{
+            headers:authHeader()
+        }).then((res) => {
+            const result = res.data.data.map(data => {
+                return {
+                    label:data.name,
+                    value:data.name,
+                }
+            })
+            setDataJabatan(result);
+        });
+    };
+
+    useEffect(() => {
+        getDataJabatan();
+        if (props.employee){
+            axios.get(API_URL+`${props.employee.id}/`,{
+                headers:authHeader()
+            }).then(res => {
+                const fields = ['eid','ename','gender','jabatan'];
+                fields.forEach(field => setValue(field, field === 'jabatan' ? res.data.data[field].name : res.data.data[field]));
+                setEid(res.data.data.eid);
+                setEname(res.data.data.ename);
+                setGender(res.data.data.gender);
+                setJabatan(res.data.data.jabatan.name);
+            });
+
+        }
+    },[]);
+
     const defaultEmpty = (value) => {
         return value === "" ? "" : value;
     };
+
 
     let btn_name = "Add";
     if (props.employee){
@@ -107,53 +122,73 @@ const AddEmployee = (props) => {
     }
 
     return (
-        <form onSubmit={props.employee ? handleSubmit(editEmployee) : handleSubmit(addEmployee)} className="need-validations" noValidate>
+        <form onSubmit={props.employee ? handleSubmit(editEmployee) : handleSubmit(addEmployee)}>
             <div className="form-group">
-                <label htmlFor="eid">Employee EID</label>
-                <input type="text" className="form-control" {...register("eid",{
-                    required:true
-                })} value={defaultEmpty(eid)} onChange={(e) => onChangeEid(e.target.value)}/>
-                {errors?.eid?.type==="required" && (
-                    <div className="alert alert-danger" role="alert">
-                        this field is required
-                    </div>
-                )}
+                <label htmlFor="eid">Employee ID</label>
+                <Controller
+                name="eid"
+                control={control}
+                render={({field: {value, onChange}}) => {
+                    return (
+                        <input type="text"
+                        className={`form-control ${errors.eid ? 'is-invalid' : ''}`}
+                        value={defaultEmpty(eid)}
+                        onChange={(e) => onChangeEid(e.target.value)}/>
+                    );
+                }}
+                />
+                <div className="invalid-feedback">{errors?.eid?.message}</div>
             </div>
             <div className="form-group">
                 <label htmlFor="ename">Employee Name</label>
-                <input type="text" className="form-control" {...register("ename",{
-                    required:true
-                })} value={defaultEmpty(ename)} onChange={(e) => onChangeEname(e.target.value)}/>
-                {errors?.ename?.type==="required" && (
-                    <div className="alert alert-danger" role="alert">
-                        this field is required
-                    </div>
-                )}
+                <Controller
+                name="ename"
+                control={control}
+                render={({field: {value, onChange}}) => {
+                    return (
+                        <input type="text"
+                        className={`form-control ${errors.ename ? 'is-invalid' : ''}`}
+                        value={defaultEmpty(ename)}
+                        onChange={(e) => onChangeEname(e.target.value)}
+                        />
+                    );
+                }}
+                />
+                <div className="invalid-feedback">{errors?.ename?.message}</div>
             </div>
             <div className="form-group">
-                <label htmlFor="gender">gender</label>
-                <select className="form-control" value={defaultEmpty(gender)} {...register("gender",{
-                    required:true
-                })} onChange={(e) => onChangeGender(e.target.value)}>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                </select>
-                {errors?.gender?.type==="required" && (
-                    <div className="alert alert-danger" role="alert">
-                        this field is required
-                    </div>
-                )}
+                <label htmlFor="gender">Gender</label>
+                <Controller
+                name="gender"
+                control={control}
+                render={({field: {value, onChange}}) => {
+                    return (
+                        <select className={`form-control ${errors.gender ? 'is-invalid' : ''}`} value={defaultEmpty(gender)}
+                        onChange={(e) => onChangeGender(e.target.value)}>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    );
+                }}
+                />
             </div>
             <div className="form-group">
                 <label htmlFor="jabatan">Jabatan</label>
-                <Select options={datajabatan} {...register("jabatan",{
-                    required:true
-                })} onChange={(e) => setJabatan(e.value)}></Select>
-                {errors?.jabatan?.type==="required" && (
-                    <div className="alert alert-danger" role="alert">
-                        this field is required
-                    </div>
-                )}
+                <Controller
+                control={control}
+                name="jabatan"
+                render={({field: {value, onChange}}) => {
+                    return (
+                        <Select
+                        options={datajabatan}
+                        placeholder={"Pilih Jabatan"}
+                        onChange={(e) => onChangeJabatan(e.value)}
+                        value={datajabatan.filter((option) => option.label === defaultEmpty(jabatan))}
+                        ></Select>
+                    );
+                }}
+                />
+                <div className="invalid-feedback">{errors?.jabatan?.message}</div>
             </div>
             <div className="form-group">
                 <button type="submit" className="btn btn-primary float-right">{btn_name}</button>

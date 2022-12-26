@@ -1,7 +1,8 @@
-import React, {useState} from "react";
+import React,{Fragment,useState} from "react";
 import { Button, Modal, ModalHeader,ModalFooter } from "react-bootstrap";
 import axios from "axios";
 import authHeader from "../../service/auth-header";
+
 
 const RemConfirmEmployee = (props) => {
     const [modal, setModal] = useState(false);
@@ -14,7 +15,7 @@ const RemConfirmEmployee = (props) => {
 
     const deleteEmployee = async(properties) => {
         try{
-            await axios.delete(API_URL+`${properties}/`,{
+            await axios.delete(API_URL+`${properties.id}/`,{
                 headers:authHeader()
             }).then((res) => {
                 props.resetState();

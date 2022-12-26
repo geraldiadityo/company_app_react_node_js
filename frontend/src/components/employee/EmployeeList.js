@@ -4,7 +4,7 @@ import AddEmployeeModal from "./AddEmployeeModal";
 import RemConfirmEmployee from "./RemConfirmEmployee";
 
 const EmployeeList = (props) => {
-    const employess = props.employess;
+    const employess = props.employees;
 
     return (
         <Table variant="dark">

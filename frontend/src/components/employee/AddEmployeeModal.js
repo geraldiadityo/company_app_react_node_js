@@ -26,9 +26,9 @@ const AddEmployeeModal = (props) => {
             <Modal show={modal} onHide={toggle}>
                 <ModalHeader closeButton>{title}</ModalHeader>
                 <ModalBody>
-                    <AddEmployee resetState={props.resetState}
+                    <AddEmployee resetState={props.resetState} toggle={toggle}
                     employee={props.employee}
-                    toggleNofit={props.toggleNotif}
+                    toggleNotif={props.toggleNotif}
                     setMessageNotif={props.setMessageNotif}/>
                 </ModalBody>
             </Modal>
