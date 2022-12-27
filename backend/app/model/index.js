@@ -28,6 +28,7 @@ db.user = require("./user.model.js")(sequelize,Sequelize);
 db.role = require("./role.model.js")(sequelize,Sequelize);
 db.employee = require("./employee.model.js")(sequelize, Sequelize);
 db.jabatan = require("./jabatan.model.js")(sequelize, Sequelize);
+db.pekerjaan = require("./pekerjaan.model.js")(sequelize, Sequelize);
 
 db.user.belongsToMany(db.role, {
     through:"user_roles",
@@ -45,6 +46,13 @@ db.jabatan.hasMany(db.employee,{as:"employees"});
 db.employee.belongsTo(db.jabatan, {
     foreignKey:"jabatanId",
     as:"jabatan",
+    onDelete:"cascade"
+});
+
+db.employee.hasMany(db.pekerjaan,{as:"pekerjaans"});
+db.pekerjaan.belongsTo(db.employee,{
+    foreignKey:"employeeId",
+    as:"employee",
     onDelete:"cascade"
 });
 

@@ -8,6 +8,8 @@ let corsOption = {
     origin: "http://localhost:3000"
 };
 
+global.__basedir = __dirname;
+
 app.use(cors(corsOption));
 
 app.use(express.json());
@@ -39,6 +41,7 @@ require("./app/routes/auth.routes.js")(app);
 require("./app/routes/user.routes.js")(app);
 require("./app/routes/employee.routes.js")(app);
 require("./app/routes/jabatan.routes.js")(app);
+require("./app/routes/pekerjaan.routes.js")(app);
 
 const PORT = process.env.PORT || 8080;
 
