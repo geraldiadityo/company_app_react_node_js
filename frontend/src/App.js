@@ -9,6 +9,7 @@ import Register from './components/auth/Register';
 import Home from './components/Home';
 import MainJabatan from './components/jabatan/MainJabatan';
 import MainEmployee from './components/employee/MainEmployee';
+import MainPekerjaan from './components/pekerjaan/MainPekerjaan';
 const App = () => {
   const [currentUser, setCurrentUser] = useState(undefined);
   const [showAdmin, setShowAdmin] = useState(false);
@@ -53,6 +54,13 @@ const App = () => {
                 </Link>
               </li>
             )}
+            {showAdmin && (
+              <li className="nav-item">
+                <Link className="nav-link" to={"/pekerjaan"}>
+                  Pekerjaan
+                </Link>
+              </li>
+            )}
           </div>
           {currentUser ? (
             <div className="navbar-nav mb-auto">
@@ -86,6 +94,7 @@ const App = () => {
           <Route path='/register' element={<Register/>}/>
           <Route path='/jabatan' element={<MainJabatan/>}/>
           <Route path='/employee' element={<MainEmployee/>}/>
+          <Route path='/pekerjaan' element={<MainPekerjaan/>}/>
         </Routes>
       </div>
     </div>
