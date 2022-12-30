@@ -1,5 +1,6 @@
 import React from "react";
 import { Table } from "react-bootstrap";
+import RemConfirmPekerjaan from "./RemConfirmPekerjaan";
 
 const PekerjaanList = (props) => {
     const pekerjaans = props.pekerjaans;
@@ -12,12 +13,13 @@ const PekerjaanList = (props) => {
                     <th>Nama Pekerjaan</th>
                     <th>File</th>
                     <th>Employee</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {!pekerjaans || pekerjaans.length <= 0 ? (
                     <tr>
-                        <td colSpan={3}>
+                        <td colSpan={4} align="center">
                             ops! no data here!
                         </td>
                     </tr>
@@ -28,6 +30,13 @@ const PekerjaanList = (props) => {
                             <td>{pekerjaan.nama}</td>
                             <td>{pekerjaan.filekerja}</td>
                             <td>{pekerjaan.employee.ename}</td>
+                            <td>
+                                <RemConfirmPekerjaan resetState={props.resetState}
+                                id={pekerjaan.id}
+                                setMessageNotif={props.setMessageNotif}
+                                toggleNotif={props.toggleNotif}
+                                />
+                            </td>
                         </tr>
                     ))
                 )}

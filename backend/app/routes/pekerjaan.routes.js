@@ -17,4 +17,8 @@ module.exports = function(app){
     app.post("/api/pekerjaan/",
     [authJwt.verifyToken, authJwt.isAdmin],
     controller.addPekerjaan);
+
+    app.delete("/api/pekerjaan/:id",
+    [authJwt.verifyToken, authJwt.isAdmin],
+    controller.deleteFile);
 }

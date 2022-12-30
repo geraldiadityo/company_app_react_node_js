@@ -60,7 +60,9 @@ const MainPekerjaan = () => {
                 </Row>
                 <Row>
                     <Col>
-                        <PekerjaanList pekerjaans={pekerjaans}/>
+                        <PekerjaanList pekerjaans={pekerjaans} resetState={resetState}
+                        setMessageNotif={setMessageNotif}
+                        toggleNotif={toggleNotif}/>
                     </Col>
                 </Row>
                 <Row>

@@ -2,6 +2,7 @@ const db = require("../model");
 const Employee = db.employee;
 const Pekerjaan = db.pekerjaan;
 const uploadFile = require("../middleware/uploadFile.js");
+const fs = require("fs");
 
 exports.addPekerjaan = async(req, res) => {
     try{
@@ -54,5 +55,34 @@ exports.getAll = (req, res) => {
         res.status(500).send({
             message:err.message
         });
+    });
+};
+
+exports.deleteFile = (req,res) => {
+    let id = req.params.id;
+    Pekerjaan.findByPk(id).then((pekerjaan) => {
+        const fileName = pekerjaan.filekerja;
+        const directoryPath = __basedir + "/resource/uploadfile/filekerja/";
+        fs.unlink(directoryPath+fileName,(err) => {
+            if (err){
+                res.status(500).send({
+                    message:`could not delete this file`
+                });
+            }
+            Pekerjaan.destroy({
+                where:{
+                    id:pekerjaan.id
+                }
+            }).then(() => {
+                res.send({
+                    message:"delete file is successfully"
+                });
+            });
+            
+        });
+    }).catch((err) => {
+        res.status(500).send({
+            message:err.message
+        })
     });
 };
