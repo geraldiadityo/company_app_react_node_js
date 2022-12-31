@@ -72,6 +72,7 @@ const AddJabatan = (props) => {
                 setSalary(res.data.data.salary);
             })
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
 
     const defaultEmpty = (value) => {

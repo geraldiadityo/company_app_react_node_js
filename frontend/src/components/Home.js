@@ -1,7 +1,6 @@
 import React from "react";
 import AuthService from "../service/auth.service";
 
-const API_URL = "http://localhost:8080/api/";
 
 const Home = () => {
     const currentUser = AuthService.getCurrentUser();

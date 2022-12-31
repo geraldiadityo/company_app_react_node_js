@@ -26,14 +26,13 @@ const MainJabatan = () => {
         }
     };
 
-    const resetState = () => {
-        getJabatans();
-    }
+    const resetState = async() => {
+        await getJabatans();
+    };
 
     useEffect(() => {
-        const dataJabatan = resetState;
-        
-        dataJabatan();
+        resetState();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
 
     const toggleNotif = () => {

@@ -2,6 +2,7 @@ import React from "react";
 import { Table } from "react-bootstrap";
 import AddEmployeeModal from "./AddEmployeeModal";
 import RemConfirmEmployee from "./RemConfirmEmployee";
+import { FormatRupiah } from "@arismun/format-rupiah";
 
 const EmployeeList = (props) => {
     const employess = props.employees;
@@ -34,7 +35,9 @@ const EmployeeList = (props) => {
                             <td>{employee.ename}</td>
                             <td>{employee.gender}</td>
                             <td>{employee.jabatan.name}</td>
-                            <td>{employee.jabatan.salary}</td>
+                            <td>
+                                <FormatRupiah value={employee.jabatan.salary}/>
+                            </td>
                             <td>
                                 <AddEmployeeModal create={false}
                                 employee={employee}

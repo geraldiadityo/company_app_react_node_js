@@ -2,6 +2,7 @@ import React from "react";
 import { Table } from "react-bootstrap";
 import AddJabatanModal from "./AddJabatanModal";
 import RemConfirmJabatan from "./RemConfirmJabatan";
+import {FormatRupiah} from "@arismun/format-rupiah";
 
 const JabatanList = (props) => {
     const jabatans = props.jabatans;
@@ -28,7 +29,9 @@ const JabatanList = (props) => {
                         <tr key={jabatan.id}>
                             <td>{index+1}</td>
                             <td>{jabatan.name}</td>
-                            <td>{jabatan.salary}</td>
+                            <td>
+                                <FormatRupiah value={jabatan.salary}/>
+                            </td>
                             <td>
                                 <AddJabatanModal create={false} jabatan={jabatan}
                                 resetState={props.resetState}
