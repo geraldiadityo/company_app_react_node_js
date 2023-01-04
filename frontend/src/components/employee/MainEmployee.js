@@ -3,14 +3,17 @@ import { Col,Row,Container } from "react-bootstrap";
 import EmployeeList from "./EmployeeList";
 import AddEmployeeModal from "./AddEmployeeModal";
 import NotifEmployee from "./NotifEmployee";
+import PdfDocument from "./reporting/Reporting";
 import axios from "axios";
 import authHeader from "../../service/auth-header";
+import { PDFDownloadLink} from "@react-pdf/renderer";
 
 const MainEmployee = () => {
     const [employees, setEmployees] = useState([]);
     const [notif, setNotif] = useState(false);
     const [message, setMessage] = useState("");
     const [variant, setVariant] = useState("");
+    const fileName = 'ReportingSalary.pdf';
 
     const API_URL = "http://localhost:8080/api/employee/";
     
@@ -71,6 +74,15 @@ const MainEmployee = () => {
                         resetState={resetState}
                         toggleNotif={toggleNotif}
                         setMessageNotif={setMessageNotif}/>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <PDFDownloadLink document={<PdfDocument employees={employees} />} fileName={fileName}>
+                        {({ blob, url, loading, error }) =>
+                            loading ? "Loading..." : "Download Reporting"
+                        }
+                        </PDFDownloadLink>
                     </Col>
                 </Row>
             </Container>
